@@ -1,0 +1,87 @@
+:root {
+    --bg-dark: #12151d;
+    --bg-darker: #0d0f16;
+    --panel-bg: rgba(26, 29, 36, 0.6);
+    --panel-border: rgba(255, 255, 255, 0.05);
+    --text-primary: #e9ecef;
+    --text-muted: #8b949e;
+    --accent-teal: #0dcaf0;
+    --accent-teal-glow: rgba(13, 202, 240, 0.15);
+}
+
+body.dark-theme {
+    font-family: 'Outfit', 'Roboto', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, .card-title, .hero-section {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Header Styling */
+.app-header {
+    background-color: var(--bg-darker);
+    border-bottom: 1px solid var(--panel-border);
+}
+
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px var(--accent-teal-glow);
+}
+
+/* Badge Glass */
+.badge-glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Custom Tabs Navigation */
+.custom-tabs {
+    gap: 0.5rem;
+}
+
+.custom-tabs .nav-link {
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-tabs .nav-link:hover:not(.disabled) {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.custom-tabs .nav-link.active {
+    color: var(--accent-teal);
+    background: var(--accent-teal-glow);
+    border-color: rgba(13, 202, 240, 0.2);
+}
+
+.custom-tabs .nav-link.disabled {
+    opacity: 0.4;
+}
+
+/* Utilities */
+.text-info {
+    color: var(--accent-teal) !important;
+}
+
+.letter-spacing-1 {
+    letter-spacing: 1px;
+}
