@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4 mb-5">
+    
+    <!-- Left Column: Truth Table & Custom Calculator -->
+    <div class="col-xl-7">
+        <h3 class="fw-bold mb-1 text-white">Truth Table & Binary Calculator</h3>
+        <p class="text-secondary small mb-4">Hover over any row to visualize it on the Heaviside graph.</p>
+        
+        <!-- Interactive Truth Table -->
+        <div class="glass-panel p-4 mb-4">
+            <div class="table-responsive">
+                <table class="table custom-table table-hover mb-0" id="truth-table" style="color: var(--text-primary); border-color: var(--border-subtle);">
+                    <thead>
+                        <tr class="text-secondary">
+                            <th>x₁</th>
+                            <th>x₂</th>
+                            <th>w₁x₁ + w₂x₂ (z)</th>
+                            <th>Condition (z ≥ θ)</th>
+                            <th>NOR Output (y)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="tt-row" data-z="0.0" data-y="1" style="cursor: pointer; transition: background 0.2s;">
+                            <td>0</td>
+                            <td>0</td>
+                            <td class="font-monospace">(-1)(0) + (-1)(0) = 0.0</td>
+                            <td><span class="badge" style="background: rgba(34, 197, 94, 0.1); color: var(--accent-success); border: 1px solid var(--accent-success);">0.0 ≥ -0.5 (TRUE)</span></td>
+                            <td class="text-success fw-bold fs-5">1</td>
+                        </tr>
+                        <tr class="tt-row" data-z="-1.0" data-y="0" style="cursor: pointer; transition: background 0.2s;">
+                            <td>0</td>
+                            <td>1</td>
+                            <td class="font-monospace">(-1)(0) + (-1)(1) = -1.0</td>
+                            <td><span class="badge" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border: 1px solid var(--accent-danger);">-1.0 &lt; -0.5 (FALSE)</span></td>
+                            <td class="text-danger fw-bold fs-5">0</td>
+                        </tr>
+                        <tr class="tt-row" data-z="-1.0" data-y="0" style="cursor: pointer; transition: background 0.2s;">
+                            <td>1</td>
+                            <td>0</td>
+                            <td class="font-monospace">(-1)(1) + (-1)(0) = -1.0</td>
+                            <td><span class="badge" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border: 1px solid var(--accent-danger);">-1.0 &lt; -0.5 (FALSE)</span></td>
+                            <td class="text-danger fw-bold fs-5">0</td>
+                        </tr>
+                        <tr class="tt-row" data-z="-2.0" data-y="0" style="cursor: pointer; transition: background 0.2s;">
+                            <td>1</td>
+                            <td>1</td>
+                            <td class="font-monospace">(-1)(1) + (-1)(1) = -2.0</td>
+                            <td><span class="badge" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border: 1px solid var(--accent-danger);">-2.0 &lt; -0.5 (FALSE)</span></td>
+                            <td class="text-danger fw-bold fs-5">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Binary Calculator -->
+        <div class="glass-panel p-4">
+            <h5 class="fw-bold text-white mb-3"><i class="fas fa-calculator me-2 text-primary"></i> Custom MCP Calculator</h5>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-2">
+                    <label class="form-label text-secondary small mb-1">x₁</label>
+                    <input type="number" id="calc-x1" class="form-control bg-dark text-white border-secondary" value="1">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-secondary small mb-1">w₁</label>
+                    <input type="number" id="calc-w1" class="form-control bg-dark text-white border-secondary" value="2">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-secondary small mb-1">x₂</label>
+                    <input type="number" id="calc-x2" class="form-control bg-dark text-white border-secondary" value="0">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-secondary small mb-1">w₂</label>
+                    <input type="number" id="calc-w2" class="form-control bg-dark text-white border-secondary" value="2">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-secondary small mb-1">θ</label>
+                    <input type="number" id="calc-theta" class="form-control bg-dark text-white border-secondary" value="1.5">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-premium w-100" onclick="runCalculator()">Run</button>
+                </div>
+            </div>
+            <div class="mt-4 p-3 rounded" id="calc-result" style="display: none; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-secondary small">Weighted Sum (z)</div>
+                        <div class="font-monospace fs-5 fw-bold text-white" id="res-z"></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-secondary small">Comparison</div>
+                        <div class="font-monospace fs-5 fw-bold" id="res-cond"></div>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-secondary small">Output (y)</div>
+                        <div class="fs-4 fw-bold" id="res-y"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Column: Interactive Graph -->
+    <div class="col-xl-5">
+        <h3 class="fw-bold mb-4 text-white">Heaviside Step Function</h3>
+        
+        <div class="glass-panel p-4 mb-4">
+            <h6 class="text-secondary mb-3 small letter-spacing-1">ACTIVATION RULE</h6>
+            <div class="text-center my-3">
+                <div class="d-inline-block text-start text-primary fs-4 font-monospace">
+                    <span class="fs-4">y = f(z) = </span>
+                    <span style="font-size: 2.5rem; vertical-align: middle;">{</span>
+                    <div class="d-inline-block text-start text-white" style="font-size: 1.1rem; vertical-align: middle;">
+                        1 &nbsp; if z ≥ θ<br>
+                        0 &nbsp; if z &lt; θ
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel p-4 text-center position-relative">
+            <!-- Dynamic Step Function SVG -->
+            <svg id="heavisideGraph" width="100%" height="250" viewBox="0 0 400 250">
+                <defs>
+                    <filter id="glow-graph" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                </defs>
+                
+                <!-- Grid -->
+                <line x1="50" y1="50" x2="350" y2="50" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+                <line x1="50" y1="100" x2="350" y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+                <line x1="50" y1="150" x2="350" y2="150" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+                
+                <!-- Axes -->
+                <line x1="50" y1="200" x2="350" y2="200" stroke="var(--text-secondary)" stroke-width="2" />
+                
+                <!-- Draggable/Dynamic Threshold Line (Visualized here as static at x=200 for demo, but JS updates it) -->
+                <line id="graph-theta-line" x1="200" y1="20" x2="200" y2="220" stroke="var(--text-secondary)" stroke-width="2" stroke-dasharray="4,4" />
+                
+                <!-- Lines y=0 and y=1 -->
+                <line id="graph-line-0" x1="50" y1="200" x2="200" y2="200" stroke="var(--accent-danger)" stroke-width="4" filter="url(#glow-graph)" />
+                <line id="graph-line-1" x1="200" y1="50" x2="350" y2="50" stroke="var(--accent-success)" stroke-width="4" filter="url(#glow-graph)" />
+                <line id="graph-vert" x1="200" y1="200" x2="200" y2="50" stroke="var(--border-subtle)" stroke-width="2" stroke-dasharray="4,4" />
+                
+                <!-- Points -->
+                <circle id="graph-point-0" cx="200" cy="200" r="6" fill="var(--bg-main)" stroke="var(--accent-danger)" stroke-width="3" />
+                <circle id="graph-point-1" cx="200" cy="50" r="6" fill="var(--accent-success)" filter="url(#glow-graph)" />
+                
+                <!-- Dynamic Hover Point -->
+                <circle id="hover-point" cx="200" cy="50" r="10" fill="var(--accent-primary)" opacity="0" filter="url(#glow-graph)"/>
+                
+                <!-- Labels -->
+                <text id="graph-lbl-theta" x="200" y="240" fill="var(--text-secondary)" font-family="Inter" font-size="14" text-anchor="middle">θ = -0.5</text>
+                <text x="360" y="205" fill="var(--text-secondary)" font-family="Inter" font-size="14">z</text>
+                <text x="30" y="55" fill="var(--text-secondary)" font-family="Inter" font-size="14">1</text>
+                <text x="30" y="205" fill="var(--text-secondary)" font-family="Inter" font-size="14">0</text>
+            </svg>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Handle Row Hover for Truth Table
+    const rows = document.querySelectorAll('.tt-row');
+    const hoverPoint = document.getElementById('hover-point');
+    const thetaX = 200; // Base x for threshold in SVG
+    const thetaValue = -0.5;
+    
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', () => {
+            row.style.background = 'rgba(255,255,255,0.05)';
+            const z = parseFloat(row.getAttribute('data-z'));
+            const y = parseInt(row.getAttribute('data-y'));
+            
+            // Map z to SVG X coordinate (roughly for visualization)
+            let targetX = 200 + ((z - thetaValue) * 100); 
+            let targetY = y === 1 ? 50 : 200;
+            
+            gsap.to(hoverPoint, { x: targetX - 200, y: targetY - 50, opacity: 1, duration: 0.4, ease: "back.out(1.7)" });
+        });
+        
+        row.addEventListener('mouseleave', () => {
+            row.style.background = 'transparent';
+            gsap.to(hoverPoint, { opacity: 0, duration: 0.2 });
+        });
+    });
+
+    // Custom Calculator Logic
+    window.runCalculator = function() {
+        const x1 = parseFloat(document.getElementById('calc-x1').value);
+        const w1 = parseFloat(document.getElementById('calc-w1').value);
+        const x2 = parseFloat(document.getElementById('calc-x2').value);
+        const w2 = parseFloat(document.getElementById('calc-w2').value);
+        const theta = parseFloat(document.getElementById('calc-theta').value);
+        
+        const z = (w1 * x1) + (w2 * x2);
+        const y = z >= theta ? 1 : 0;
+        
+        document.getElementById('res-z').textContent = z.toFixed(2);
+        
+        const condElem = document.getElementById('res-cond');
+        if (y === 1) {
+            condElem.innerHTML = `<span class="text-success">${z.toFixed(2)} ≥ ${theta.toFixed(2)}</span>`;
+            document.getElementById('res-y').innerHTML = `<span class="text-success">1</span>`;
+        } else {
+            condElem.innerHTML = `<span class="text-danger">${z.toFixed(2)} &lt; ${theta.toFixed(2)}</span>`;
+            document.getElementById('res-y').innerHTML = `<span class="text-danger">0</span>`;
+        }
+        
+        const resBox = document.getElementById('calc-result');
+        resBox.style.display = 'block';
+        gsap.fromTo(resBox, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4 });
+    }
+</script>
+{% endblock %}

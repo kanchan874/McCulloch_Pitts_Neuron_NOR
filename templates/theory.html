@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-12 text-center">
+        <span class="badge bg-premium-gradient text-white mb-2 py-2 px-3 letter-spacing-1">LEARNING CENTER</span>
+        <h2 class="fw-bold text-white mb-3">Neural Origins & Theory</h2>
+        <p class="text-secondary w-75 mx-auto">Explore the historical foundations of Artificial Intelligence and test your knowledge of McCulloch-Pitts Neurons.</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    
+    <!-- Timeline & Flashcards -->
+    <div class="col-lg-7">
+        
+        <!-- Timeline -->
+        <h4 class="text-white fw-bold mb-4 border-bottom border-secondary pb-2"><i class="fas fa-history text-primary me-2"></i> Timeline of AI Origins</h4>
+        <div class="glass-panel p-4 mb-5">
+            <div class="timeline position-relative ps-4 border-start border-secondary" style="border-left-width: 3px !important;">
+                
+                <div class="mb-4 position-relative">
+                    <span class="position-absolute bg-primary rounded-circle" style="width: 15px; height: 15px; left: -25px; top: 5px;"></span>
+                    <h5 class="text-white fw-bold mb-1">1943: The First Mathematical Model</h5>
+                    <p class="text-secondary small mb-2">Warren McCulloch and Walter Pitts</p>
+                    <p class="text-muted">They published <em>"A Logical Calculus of the Ideas Immanent in Nervous Activity"</em>, introducing the first simplified mathematical model of a biological neuron (the MCP Neuron), using binary inputs and threshold logic.</p>
+                </div>
+                
+                <div class="mb-4 position-relative">
+                    <span class="position-absolute bg-secondary rounded-circle" style="width: 15px; height: 15px; left: -25px; top: 5px;"></span>
+                    <h5 class="text-white fw-bold mb-1">1957: The Perceptron</h5>
+                    <p class="text-secondary small mb-2">Frank Rosenblatt</p>
+                    <p class="text-muted">Building on MCP, Rosenblatt created the Perceptron, introducing <strong>learnable weights</strong> via a training algorithm, allowing the machine to learn from examples instead of hard-coding the weights.</p>
+                </div>
+
+                <div class="mb-0 position-relative">
+                    <span class="position-absolute bg-success rounded-circle" style="width: 15px; height: 15px; left: -25px; top: 5px;"></span>
+                    <h5 class="text-white fw-bold mb-1">Modern Deep Learning</h5>
+                    <p class="text-secondary small mb-2">Today</p>
+                    <p class="text-muted">Using millions of artificial neurons arranged in deep layers (Hidden Layers) with non-linear activation functions (ReLU, Sigmoid), powering ChatGPT, self-driving cars, and AlphaFold.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Flashcards -->
+        <h4 class="text-white fw-bold mb-4 border-bottom border-secondary pb-2"><i class="fas fa-clone text-info me-2"></i> Knowledge Flashcards</h4>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="glass-panel p-3 h-100 flashcard" onclick="this.classList.toggle('flipped')">
+                    <div class="flashcard-inner position-relative w-100 h-100" style="min-height: 150px;">
+                        <div class="flashcard-front d-flex align-items-center justify-content-center text-center p-3 w-100 h-100 position-absolute top-0 start-0">
+                            <h5 class="text-white fw-bold m-0">What is a Threshold (θ)?</h5>
+                        </div>
+                        <div class="flashcard-back d-flex align-items-center justify-content-center text-center p-3 w-100 h-100 position-absolute top-0 start-0 text-success bg-dark rounded border border-success" style="opacity: 0; pointer-events: none;">
+                            <p class="m-0 small">The minimum weighted sum (z) required for the neuron to fire (output 1). If z &lt; θ, output is 0.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="glass-panel p-3 h-100 flashcard" onclick="this.classList.toggle('flipped')">
+                    <div class="flashcard-inner position-relative w-100 h-100" style="min-height: 150px;">
+                        <div class="flashcard-front d-flex align-items-center justify-content-center text-center p-3 w-100 h-100 position-absolute top-0 start-0">
+                            <h5 class="text-white fw-bold m-0">Biggest limitation of MCP?</h5>
+                        </div>
+                        <div class="flashcard-back d-flex align-items-center justify-content-center text-center p-3 w-100 h-100 position-absolute top-0 start-0 text-warning bg-dark rounded border border-warning" style="opacity: 0; pointer-events: none;">
+                            <p class="m-0 small">It cannot learn. Weights and thresholds must be manually set by an engineer. Also, a single node cannot solve non-linear problems like XOR.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <!-- Quiz Section -->
+    <div class="col-lg-5">
+        <h4 class="text-white fw-bold mb-4 border-bottom border-secondary pb-2"><i class="fas fa-question-circle text-warning me-2"></i> Interactive Quiz</h4>
+        
+        <div class="glass-panel p-4 h-100" id="quiz-container">
+            
+            <!-- Q1 -->
+            <div class="quiz-question mb-4" id="q1">
+                <p class="text-white fw-bold">1. Which activation function does the McCulloch-Pitts neuron use?</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-premium text-start" onclick="checkAnswer('q1', this, false)">A) Sigmoid Function</button>
+                    <button class="btn btn-outline-premium text-start" onclick="checkAnswer('q1', this, true)">B) Heaviside Step Function</button>
+                    <button class="btn btn-outline-premium text-start" onclick="checkAnswer('q1', this, false)">C) ReLU (Rectified Linear Unit)</button>
+                </div>
+                <div class="quiz-feedback mt-2 small font-monospace" style="display: none;"></div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-question mb-4" id="q2">
+                <p class="text-white fw-bold">2. To create a NOR gate (outputs 1 ONLY when both inputs are 0), the weights must be:</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-premium text-start" onclick="checkAnswer('q2', this, false)">A) Positive</button>
+                    <button class="btn btn-outline-premium text-start" onclick="checkAnswer('q2', this, true)">B) Negative</button>
+                    <button class="btn btn-outline-premium text-start" onclick="checkAnswer('q2', this, false)">C) Zero</button>
+                </div>
+                <div class="quiz-feedback mt-2 small font-monospace" style="display: none;"></div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-question mb-0" id="q3">
+                <p class="text-white fw-bold">3. True or False: A single MCP neuron can solve the XOR problem.</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-premium text-start" onclick="checkAnswer('q3', this, false)">A) True</button>
+                    <button class="btn btn-outline-premium text-start" onclick="checkAnswer('q3', this, true)">B) False</button>
+                </div>
+                <div class="quiz-feedback mt-2 small font-monospace" style="display: none;"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    /* Flashcard CSS */
+    .flashcard { cursor: pointer; perspective: 1000px; }
+    .flashcard-inner { transition: transform 0.6s; transform-style: preserve-3d; }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back { backface-visibility: hidden; }
+    .flashcard-back { transform: rotateY(180deg); }
+    .flashcard.flipped .flashcard-back { opacity: 1 !important; pointer-events: auto !important; }
+    .flashcard.flipped .flashcard-front { opacity: 0; }
+</style>
+<script>
+    function checkAnswer(questionId, btnElement, isCorrect) {
+        // Disable all buttons in this question
+        const container = document.getElementById(questionId);
+        const buttons = container.querySelectorAll('button');
+        buttons.forEach(b => {
+            b.disabled = true;
+            b.classList.remove('btn-outline-premium');
+            b.classList.add('btn-dark');
+        });
+        
+        // Show feedback
+        const feedback = container.querySelector('.quiz-feedback');
+        feedback.style.display = 'block';
+        
+        if (isCorrect) {
+            btnElement.classList.replace('btn-dark', 'btn-success');
+            feedback.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i> Correct!</span>';
+            gsap.fromTo(feedback, {opacity: 0, y: 10}, {opacity: 1, y: 0, duration: 0.3});
+        } else {
+            btnElement.classList.replace('btn-dark', 'btn-danger');
+            feedback.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i> Incorrect. Try refreshing to try again.</span>';
+            gsap.fromTo(feedback, {opacity: 0, x: -10}, {opacity: 1, x: 0, duration: 0.3, ease: "bounce.out"});
+        }
+    }
+</script>
+{% endblock %}
