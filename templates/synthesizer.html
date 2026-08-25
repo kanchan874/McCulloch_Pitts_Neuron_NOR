@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4 mb-5">
+    
+    <div class="col-12 text-center mb-4">
+        <h2 class="fw-bold text-white mb-2">Universal Logic Synthesizer</h2>
+        <p class="text-secondary">McCulloch-Pitts Neurons are universal approximators. Combine multiple nodes to synthesize complex logic (e.g., XOR).</p>
+    </div>
+
+    <!-- Network Architecture Map -->
+    <div class="col-xl-7">
+        <div class="glass-panel p-4 h-100">
+            <h5 class="fw-bold text-white mb-4"><i class="fas fa-network-wired me-2 text-primary"></i> Two-Layer Architecture</h5>
+            
+            <div class="d-flex align-items-center justify-content-center h-100 py-3 position-relative">
+                <svg id="synthArch" width="100%" height="400" viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="glow-synth" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+
+                    <!-- Wires -->
+                    <path d="M 100 120 L 300 120" stroke="var(--border-subtle)" stroke-width="3" />
+                    <path d="M 100 120 L 300 280" stroke="var(--border-subtle)" stroke-width="3" />
+                    
+                    <path d="M 100 280 L 300 120" stroke="var(--border-subtle)" stroke-width="3" />
+                    <path d="M 100 280 L 300 280" stroke="var(--border-subtle)" stroke-width="3" />
+
+                    <path d="M 300 120 L 550 200" stroke="var(--border-subtle)" stroke-width="3" />
+                    <path d="M 300 280 L 550 200" stroke="var(--border-subtle)" stroke-width="3" />
+                    <path d="M 550 200 L 650 200" stroke="var(--accent-success)" stroke-width="4" />
+
+                    <!-- Inputs -->
+                    <circle cx="100" cy="120" r="30" fill="var(--bg-card)" stroke="var(--text-secondary)" stroke-width="3" />
+                    <text x="100" y="127" fill="#fff" font-family="Inter" font-weight="bold" font-size="20" text-anchor="middle">x₁</text>
+                    
+                    <circle cx="100" cy="280" r="30" fill="var(--bg-card)" stroke="var(--text-secondary)" stroke-width="3" />
+                    <text x="100" y="287" fill="#fff" font-family="Inter" font-weight="bold" font-size="20" text-anchor="middle">x₂</text>
+
+                    <!-- Hidden Layer -->
+                    <!-- Node H1 -->
+                    <circle cx="300" cy="120" r="50" fill="rgba(6, 182, 212, 0.1)" stroke="var(--accent-secondary)" stroke-width="3" filter="url(#glow-synth)" />
+                    <text x="300" y="115" fill="#fff" font-family="Inter" font-weight="bold" font-size="18" text-anchor="middle">H₁</text>
+                    <text x="300" y="140" id="svg-th1" fill="var(--accent-secondary)" font-family="monospace" font-size="14" text-anchor="middle">θ = 1.0</text>
+                    
+                    <!-- Node H2 -->
+                    <circle cx="300" cy="280" r="50" fill="rgba(6, 182, 212, 0.1)" stroke="var(--accent-secondary)" stroke-width="3" filter="url(#glow-synth)" />
+                    <text x="300" y="275" fill="#fff" font-family="Inter" font-weight="bold" font-size="18" text-anchor="middle">H₂</text>
+                    <text x="300" y="300" id="svg-th2" fill="var(--accent-secondary)" font-family="monospace" font-size="14" text-anchor="middle">θ = 1.0</text>
+
+                    <!-- Output Node -->
+                    <circle cx="550" cy="200" r="55" fill="rgba(34, 197, 94, 0.1)" stroke="var(--accent-success)" stroke-width="3" filter="url(#glow-synth)" />
+                    <text x="550" y="195" fill="#fff" font-family="Inter" font-weight="bold" font-size="20" text-anchor="middle">Output</text>
+                    <text x="550" y="220" id="svg-ty" fill="var(--accent-success)" font-family="monospace" font-size="14" text-anchor="middle">θ = 1.0</text>
+                    
+                    <text x="650" y="190" fill="var(--text-secondary)" font-family="Inter" font-size="14" text-anchor="middle">Y</text>
+
+                    <!-- Weight Labels -->
+                    <rect x="180" y="108" width="40" height="20" rx="4" fill="var(--bg-main)" stroke="var(--border-subtle)" />
+                    <text x="200" y="123" id="svg-w11" fill="var(--text-secondary)" font-family="monospace" font-size="12" text-anchor="middle">1</text>
+                    
+                    <rect x="180" y="270" width="40" height="20" rx="4" fill="var(--bg-main)" stroke="var(--border-subtle)" />
+                    <text x="200" y="285" id="svg-w22" fill="var(--text-secondary)" font-family="monospace" font-size="12" text-anchor="middle">1</text>
+                    
+                    <rect x="420" y="145" width="40" height="20" rx="4" fill="var(--bg-main)" stroke="var(--border-subtle)" />
+                    <text x="440" y="160" id="svg-wy1" fill="var(--text-secondary)" font-family="monospace" font-size="12" text-anchor="middle">1</text>
+                    
+                    <rect x="420" y="235" width="40" height="20" rx="4" fill="var(--bg-main)" stroke="var(--border-subtle)" />
+                    <text x="440" y="250" id="svg-wy2" fill="var(--text-secondary)" font-family="monospace" font-size="12" text-anchor="middle">1</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Settings & Result Table -->
+    <div class="col-xl-5">
+        <div class="glass-panel p-4 h-100">
+            <h5 class="fw-bold text-white mb-4">Synthesizer Controls</h5>
+            
+            <div class="mb-4">
+                <h6 class="text-secondary small letter-spacing-1 mb-3">NODE H₁ SETTINGS</h6>
+                <div class="row g-2">
+                    <div class="col-4">
+                        <label class="small text-secondary">w(x₁&rarr;H₁)</label>
+                        <input type="number" id="w11" class="form-control bg-dark text-white border-secondary param-input" value="1">
+                    </div>
+                    <div class="col-4">
+                        <label class="small text-secondary">w(x₂&rarr;H₁)</label>
+                        <input type="number" id="w21" class="form-control bg-dark text-white border-secondary param-input" value="-1">
+                    </div>
+                    <div class="col-4">
+                        <label class="small text-warning">Threshold θ</label>
+                        <input type="number" id="th1" class="form-control bg-dark text-white border-secondary param-input" value="1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h6 class="text-secondary small letter-spacing-1 mb-3">NODE H₂ SETTINGS</h6>
+                <div class="row g-2">
+                    <div class="col-4">
+                        <label class="small text-secondary">w(x₁&rarr;H₂)</label>
+                        <input type="number" id="w12" class="form-control bg-dark text-white border-secondary param-input" value="-1">
+                    </div>
+                    <div class="col-4">
+                        <label class="small text-secondary">w(x₂&rarr;H₂)</label>
+                        <input type="number" id="w22" class="form-control bg-dark text-white border-secondary param-input" value="1">
+                    </div>
+                    <div class="col-4">
+                        <label class="small text-warning">Threshold θ</label>
+                        <input type="number" id="th2" class="form-control bg-dark text-white border-secondary param-input" value="1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h6 class="text-secondary small letter-spacing-1 mb-3">OUTPUT NODE Y SETTINGS</h6>
+                <div class="row g-2">
+                    <div class="col-4">
+                        <label class="small text-secondary">w(H₁&rarr;Y)</label>
+                        <input type="number" id="wy1" class="form-control bg-dark text-white border-secondary param-input" value="1">
+                    </div>
+                    <div class="col-4">
+                        <label class="small text-secondary">w(H₂&rarr;Y)</label>
+                        <input type="number" id="wy2" class="form-control bg-dark text-white border-secondary param-input" value="1">
+                    </div>
+                    <div class="col-4">
+                        <label class="small text-warning">Threshold θ</label>
+                        <input type="number" id="thy" class="form-control bg-dark text-white border-secondary param-input" value="1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pre-built Configurations -->
+            <h6 class="text-secondary small letter-spacing-1 mb-3">TEMPLATES</h6>
+            <div class="d-flex gap-2 mb-4">
+                <button class="btn btn-outline-premium flex-fill" onclick="loadSynthPreset('XOR')">Load XOR Gate</button>
+                <button class="btn btn-outline-premium flex-fill" onclick="loadSynthPreset('XNOR')">Load XNOR Gate</button>
+            </div>
+
+            <h5 class="fw-bold text-white mb-3 mt-4 border-top border-secondary pt-4">Synthesized Truth Table</h5>
+            <div class="table-responsive">
+                <table class="table custom-table table-sm mb-0 text-center">
+                    <thead>
+                        <tr class="text-secondary">
+                            <th>x₁</th>
+                            <th>x₂</th>
+                            <th>H₁</th>
+                            <th>H₂</th>
+                            <th class="text-success">Output Y</th>
+                        </tr>
+                    </thead>
+                    <tbody id="synth-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/synthesizer.js') }}"></script>
+{% endblock %}

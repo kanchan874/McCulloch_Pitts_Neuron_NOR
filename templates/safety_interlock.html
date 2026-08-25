@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4 mb-5">
+    <div class="col-12 text-center mb-4">
+        <span class="badge bg-premium-gradient text-white mb-2 py-2 px-3 letter-spacing-1">REAL-WORLD APPLICATION</span>
+        <h2 class="fw-bold text-white"><i class="fas fa-shield-alt text-primary me-2"></i> Industrial Safety Interlock</h2>
+        <p class="text-secondary">Applying the NOR Gate as a fail-safe mechanism in a digital twin environment.</p>
+    </div>
+
+    <!-- Left Column: Industrial Digital Twin -->
+    <div class="col-xl-7">
+        <div class="glass-panel p-4 h-100 d-flex flex-column position-relative">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold text-white mb-0">Hydraulic Press <span class="text-secondary fw-normal fs-6">Unit #04</span></h4>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="small text-secondary">STATUS</span>
+                    <span id="dt-status-badge" class="badge rounded-pill" style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: var(--accent-success);">
+                        <i class="fas fa-circle fa-xs me-1 heartbeat"></i> RUNNING
+                    </span>
+                </div>
+            </div>
+
+            <!-- Digital Twin SVG -->
+            <div class="flex-grow-1 d-flex align-items-center justify-content-center py-4 bg-dark rounded border border-secondary position-relative overflow-hidden" style="min-height: 350px;">
+                
+                <!-- Grid Background -->
+                <div class="position-absolute w-100 h-100" style="background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.5;"></div>
+
+                <svg id="machine-svg" width="100%" height="300" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" class="position-relative">
+                    <defs>
+                        <filter id="glow-danger" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+
+                    <!-- Machine Base -->
+                    <rect x="150" y="240" width="200" height="40" fill="var(--bg-card)" stroke="var(--border-subtle)" stroke-width="2"/>
+                    <rect x="200" y="50" width="100" height="20" fill="var(--bg-card)" stroke="var(--border-subtle)" stroke-width="2"/>
+                    
+                    <!-- Pillars -->
+                    <rect x="170" y="70" width="20" height="170" fill="var(--bg-card)" stroke="var(--border-subtle)" stroke-width="2"/>
+                    <rect x="310" y="70" width="20" height="170" fill="var(--bg-card)" stroke="var(--border-subtle)" stroke-width="2"/>
+
+                    <!-- Press Head (Moves) -->
+                    <g id="press-head" transform="translate(0, 0)">
+                        <rect x="200" y="70" width="100" height="60" fill="var(--bg-main)" stroke="var(--accent-secondary)" stroke-width="2"/>
+                        <path d="M 210 130 L 290 130 L 280 150 L 220 150 Z" fill="var(--bg-main)" stroke="var(--accent-secondary)" stroke-width="2"/>
+                    </g>
+
+                    <!-- Workpiece -->
+                    <circle cx="250" cy="220" r="15" fill="var(--text-secondary)" />
+
+                    <!-- Sensor A: Door -->
+                    <rect x="60" y="100" width="80" height="120" fill="transparent" stroke="var(--border-subtle)" stroke-width="3" stroke-dasharray="5,5" />
+                    <text x="100" y="90" fill="var(--text-secondary)" font-family="Inter" font-size="12" text-anchor="middle">Safety Door</text>
+                    <path id="door-indicator" d="M 140 100 L 140 220" stroke="var(--accent-success)" stroke-width="4" />
+
+                    <!-- Sensor B: Light Curtain -->
+                    <line x1="350" y1="70" x2="350" y2="240" stroke="var(--border-subtle)" stroke-width="2" />
+                    <line x1="450" y1="70" x2="450" y2="240" stroke="var(--border-subtle)" stroke-width="2" />
+                    <g id="light-beams">
+                        <line x1="350" y1="100" x2="450" y2="100" stroke="var(--accent-success)" stroke-width="2" opacity="0.6"/>
+                        <line x1="350" y1="140" x2="450" y2="140" stroke="var(--accent-success)" stroke-width="2" opacity="0.6"/>
+                        <line x1="350" y1="180" x2="450" y2="180" stroke="var(--accent-success)" stroke-width="2" opacity="0.6"/>
+                        <line x1="350" y1="220" x2="450" y2="220" stroke="var(--accent-success)" stroke-width="2" opacity="0.6"/>
+                    </g>
+                    <text x="400" y="60" fill="var(--text-secondary)" font-family="Inter" font-size="12" text-anchor="middle">Light Curtain</text>
+
+                    <!-- Obstruction (Hidden by default) -->
+                    <circle id="obstruction" cx="400" cy="160" r="20" fill="var(--accent-danger)" filter="url(#glow-danger)" opacity="0" />
+                </svg>
+            </div>
+
+            <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle);">
+                <div class="row text-center font-monospace small">
+                    <div class="col-4 border-end border-secondary">
+                        <span class="text-secondary d-block mb-1">SENSOR A (Door)</span>
+                        <span id="lbl-sa" class="text-success fw-bold">0 (Closed)</span>
+                    </div>
+                    <div class="col-4 border-end border-secondary">
+                        <span class="text-secondary d-block mb-1">SENSOR B (Curtain)</span>
+                        <span id="lbl-sb" class="text-success fw-bold">0 (Clear)</span>
+                    </div>
+                    <div class="col-4">
+                        <span class="text-secondary d-block mb-1">NOR OUTPUT (Power)</span>
+                        <span id="lbl-out" class="text-success fw-bold">1 (ON)</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Right Column: Controls & Logic -->
+    <div class="col-xl-5">
+        <div class="glass-panel p-4 h-100">
+            <h4 class="fw-bold text-white mb-4">Fail-Safe Interlock Logic</h4>
+            <p class="text-secondary small mb-5">In industrial automation, machines must instantly stop if any safety boundary is breached. The McCulloch-Pitts NOR logic ensures power (1) is only supplied if all hazard sensors report safe (0).</p>
+            
+            <h6 class="text-secondary small letter-spacing-1 mb-3">SENSOR INJECTION</h6>
+            
+            <div class="d-flex flex-column gap-3 mb-5">
+                <!-- Sensor A Control -->
+                <div class="p-3 rounded d-flex justify-content-between align-items-center cursor-pointer" id="ctrl-a" onclick="toggleSafetySensor('A')" style="border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.02); transition: all 0.3s;">
+                    <div>
+                        <div class="fw-bold text-white mb-1"><i class="fas fa-door-open me-2 text-primary"></i> Sensor A (Door)</div>
+                        <div class="small text-secondary">0 = Closed, 1 = Open (Danger)</div>
+                    </div>
+                    <div class="fs-4 fw-bold text-success" id="val-a">0</div>
+                </div>
+
+                <!-- Sensor B Control -->
+                <div class="p-3 rounded d-flex justify-content-between align-items-center cursor-pointer" id="ctrl-b" onclick="toggleSafetySensor('B')" style="border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.02); transition: all 0.3s;">
+                    <div>
+                        <div class="fw-bold text-white mb-1"><i class="fas fa-wave-square me-2 text-primary"></i> Sensor B (Light Curtain)</div>
+                        <div class="small text-secondary">0 = Clear, 1 = Breached (Danger)</div>
+                    </div>
+                    <div class="fs-4 fw-bold text-success" id="val-b">0</div>
+                </div>
+            </div>
+
+            <div class="p-4 rounded text-center position-relative overflow-hidden" id="power-box" style="background: rgba(34, 197, 94, 0.05); border: 2px solid var(--accent-success);">
+                <h6 class="text-secondary small letter-spacing-1 mb-3">MACHINE POWER RELAY</h6>
+                <div class="display-4 fw-bold text-success mb-2" id="power-status">ENGAGED</div>
+                <div class="font-monospace small text-success" id="power-eq">z = 0, z ≥ -0.5 &rarr; y = 1</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let sensA = 0;
+    let sensB = 0;
+    let pressAnim;
+
+    function initAnimation() {
+        pressAnim = gsap.to("#press-head", {
+            y: 90,
+            duration: 1.5,
+            yoyo: true,
+            repeat: -1,
+            ease: "sine.inOut"
+        });
+    }
+
+    function toggleSafetySensor(sensor) {
+        if (sensor === 'A') sensA = sensA === 1 ? 0 : 1;
+        if (sensor === 'B') sensB = sensB === 1 ? 0 : 1;
+        updateInterlock();
+    }
+
+    function updateInterlock() {
+        const ctrlA = document.getElementById('ctrl-a');
+        const valA = document.getElementById('val-a');
+        const lblSa = document.getElementById('lbl-sa');
+        const doorInd = document.getElementById('door-indicator');
+
+        if (sensA === 1) {
+            ctrlA.style.borderColor = "var(--accent-danger)";
+            valA.textContent = "1";
+            valA.className = "fs-4 fw-bold text-danger";
+            lblSa.innerHTML = '<span class="text-danger fw-bold">1 (Open)</span>';
+            doorInd.setAttribute('stroke', 'var(--accent-danger)');
+            doorInd.setAttribute('stroke-dasharray', '5,5');
+            doorInd.setAttribute('d', 'M 100 100 L 100 220'); // open door
+        } else {
+            ctrlA.style.borderColor = "var(--border-subtle)";
+            valA.textContent = "0";
+            valA.className = "fs-4 fw-bold text-success";
+            lblSa.innerHTML = '<span class="text-success fw-bold">0 (Closed)</span>';
+            doorInd.setAttribute('stroke', 'var(--accent-success)');
+            doorInd.removeAttribute('stroke-dasharray');
+            doorInd.setAttribute('d', 'M 140 100 L 140 220'); // closed door
+        }
+
+        const ctrlB = document.getElementById('ctrl-b');
+        const valB = document.getElementById('val-b');
+        const lblSb = document.getElementById('lbl-sb');
+        const beams = document.querySelectorAll('#light-beams line');
+        const obs = document.getElementById('obstruction');
+
+        if (sensB === 1) {
+            ctrlB.style.borderColor = "var(--accent-danger)";
+            valB.textContent = "1";
+            valB.className = "fs-4 fw-bold text-danger";
+            lblSb.innerHTML = '<span class="text-danger fw-bold">1 (Breach)</span>';
+            beams.forEach(b => b.setAttribute('stroke', 'var(--accent-danger)'));
+            gsap.to(obs, {opacity: 1, duration: 0.3, scale: 1.2, ease: "back.out"});
+        } else {
+            ctrlB.style.borderColor = "var(--border-subtle)";
+            valB.textContent = "0";
+            valB.className = "fs-4 fw-bold text-success";
+            lblSb.innerHTML = '<span class="text-success fw-bold">0 (Clear)</span>';
+            beams.forEach(b => b.setAttribute('stroke', 'var(--accent-success)'));
+            gsap.to(obs, {opacity: 0, duration: 0.3, scale: 0.8});
+        }
+
+        // Logic
+        const machineOn = (sensA === 0 && sensB === 0);
+        
+        const pb = document.getElementById('power-box');
+        const ps = document.getElementById('power-status');
+        const peq = document.getElementById('power-eq');
+        const lout = document.getElementById('lbl-out');
+        const badge = document.getElementById('dt-status-badge');
+
+        const z = -sensA - sensB;
+
+        if (machineOn) {
+            pb.style.borderColor = "var(--accent-success)";
+            pb.style.background = "rgba(34, 197, 94, 0.05)";
+            ps.textContent = "ENGAGED";
+            ps.className = "display-4 fw-bold text-success mb-2";
+            peq.className = "font-monospace small text-success";
+            peq.innerHTML = `z = ${z}, z ≥ -0.5 &rarr; y = 1`;
+            lout.innerHTML = '<span class="text-success fw-bold">1 (ON)</span>';
+            
+            badge.innerHTML = '<i class="fas fa-circle fa-xs me-1 heartbeat"></i> RUNNING';
+            badge.style.color = 'var(--accent-success)';
+            badge.style.background = 'rgba(34, 197, 94, 0.15)';
+            badge.style.borderColor = 'rgba(34, 197, 94, 0.3)';
+
+            if (pressAnim) pressAnim.play();
+        } else {
+            pb.style.borderColor = "var(--accent-danger)";
+            pb.style.background = "rgba(239, 68, 68, 0.05)";
+            ps.textContent = "EMERGENCY STOP";
+            ps.className = "display-5 fw-bold text-danger mb-2 blink";
+            peq.className = "font-monospace small text-danger";
+            peq.innerHTML = `z = ${z}, z &lt; -0.5 &rarr; y = 0`;
+            lout.innerHTML = '<span class="text-danger fw-bold">0 (OFF)</span>';
+
+            badge.innerHTML = '<i class="fas fa-exclamation-triangle fa-xs me-1 blink"></i> HALTED';
+            badge.style.color = 'var(--accent-danger)';
+            badge.style.background = 'rgba(239, 68, 68, 0.15)';
+            badge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+
+            if (pressAnim) pressAnim.pause();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initAnimation();
+        updateInterlock();
+    });
+</script>
+<style>
+    .blink {
+        animation: blinker 1s linear infinite;
+    }
+    @keyframes blinker {
+        50% { opacity: 0.3; }
+    }
+</style>
+{% endblock %}

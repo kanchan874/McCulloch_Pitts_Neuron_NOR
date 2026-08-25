@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-5 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-graduation-cap fa-4x text-primary"></i>
+                </div>
+                <h2 class="fw-bold mb-3">About the Project</h2>
+                <p class="lead text-muted mb-5">This McCulloch-Pitts NOR Gate Simulator was developed as an educational tool for Deep Learning students.</p>
+                
+                <h4 class="fw-bold text-start border-bottom pb-2 mb-3">Technology Stack</h4>
+                <div class="d-flex flex-wrap gap-2 justify-content-center mb-5">
+                    <span class="badge bg-light text-dark border p-2 fs-6"><i class="fab fa-python me-1 text-primary"></i> Python 3.12 (Flask)</span>
+                    <span class="badge bg-light text-dark border p-2 fs-6"><i class="fab fa-html5 me-1 text-danger"></i> HTML5 & CSS3</span>
+                    <span class="badge bg-light text-dark border p-2 fs-6"><i class="fab fa-bootstrap me-1 text-purple"></i> Bootstrap 5</span>
+                    <span class="badge bg-light text-dark border p-2 fs-6"><i class="fab fa-js me-1 text-warning"></i> JavaScript (ES6)</span>
+                    <span class="badge bg-light text-dark border p-2 fs-6"><i class="fas fa-database me-1 text-secondary"></i> SQLite</span>
+                </div>
+                
+                <h4 class="fw-bold text-start border-bottom pb-2 mb-3">Future Scope</h4>
+                <ul class="list-unstyled text-start fs-5">
+                    <li class="mb-2"><i class="fas fa-angle-right text-primary me-2"></i> Implement AND, OR, NAND, and XOR Gates</li>
+                    <li class="mb-2"><i class="fas fa-angle-right text-primary me-2"></i> Add Perceptron Learning Algorithm</li>
+                    <li class="mb-2"><i class="fas fa-angle-right text-primary me-2"></i> Extend to Multi-Layer Perceptron (MLP)</li>
+                    <li class="mb-2"><i class="fas fa-angle-right text-primary me-2"></i> Integrate TensorFlow & PyTorch representations</li>
+                </ul>
+                
+                <div class="mt-5 pt-4 border-top">
+                    <p class="text-muted small">Designed for educational purposes and portfolio showcases.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
