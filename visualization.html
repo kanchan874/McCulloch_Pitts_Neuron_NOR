@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McCulloch-Pitts Neuron Lab</title>
+    
+    <!-- Fonts: Poppins (Headers) & Inter (Body) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS (Used mainly for grid system, overridden by custom themes) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Icons: Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Core Architecture CSS -->
+    <link rel="stylesheet" href="static/css/theme.css">
+    <link rel="stylesheet" href="static/css/components.css">
+    <link rel="stylesheet" href="static/css/animations.css">
+    <link rel="stylesheet" href="static/css/dashboard.css"> <!-- Keep legacy for specific overrides -->
+    
+    <!-- GSAP for advanced animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    
+</head>
+<body class="bg-main text-primary fade-up">
+    
+    <!-- Premium Navbar -->
+    <header class="app-header p-3 mb-4 shadow-sm">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            
+            <div class="d-flex align-items-center gap-3">
+                <div class="logo-icon d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: rgba(6, 182, 212, 0.1); border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.3);">
+                    <i class="fas fa-brain text-gradient fs-4"></i>
+                </div>
+                <div>
+                    <h1 class="h5 mb-0 fw-bold" style="font-family: 'Poppins', sans-serif;">MP Neuron Lab</h1>
+                    <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3);">Educational Platform</span>
+                </div>
+            </div>
+
+            <!-- Navbar Links -->
+            <nav class="d-none d-lg-flex gap-2">
+                <a class="nav-link px-3 py-2 " href="index.html">
+                    <i class="fas fa-home me-2"></i> Home
+                </a>
+                <a class="nav-link px-3 py-2 active" href="visualization.html">
+                    <i class="fas fa-project-diagram me-2"></i> Simulator
+                </a>
+                <a class="nav-link px-3 py-2 " href="simulator.html">
+                    <i class="fas fa-table me-2"></i> Truth Table
+                </a>
+                <a class="nav-link px-3 py-2 " href="synthesizer.html">
+                    <i class="fas fa-layer-group me-2"></i> Synthesizer
+                </a>
+                <a class="nav-link px-3 py-2 " href="safety_interlock.html">
+                    <i class="fas fa-shield-alt me-2"></i> Industrial Twin
+                </a>
+                <a class="nav-link px-3 py-2 " href="theory.html">
+                    <i class="fas fa-book-open me-2"></i> Theory
+                </a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button class="btn btn-outline-premium d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="collapse d-lg-none mt-3" id="mobileMenu">
+            <div class="d-flex flex-column gap-2 p-3 glass-panel">
+                <a class="nav-link px-3 py-2 " href="index.html">Home</a>
+                <a class="nav-link px-3 py-2 active" href="visualization.html">Simulator</a>
+                <a class="nav-link px-3 py-2 " href="simulator.html">Truth Table</a>
+                <a class="nav-link px-3 py-2 " href="synthesizer.html">Synthesizer</a>
+                <a class="nav-link px-3 py-2 " href="safety_interlock.html">Industrial Twin</a>
+                <a class="nav-link px-3 py-2 " href="theory.html">Theory</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="container-fluid px-4 pb-5">
+        
+<div class="row g-4 mb-5">
+    <!-- Left Column: Architecture Visualizer -->
+    <div class="col-xl-7">
+        <div class="glass-panel p-4 h-100 d-flex flex-column">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0 text-white" id="viz-title">McCulloch-Pitts NOR Neuron</h3>
+                <span class="badge rounded-pill text-success" style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3);">
+                    <i class="fas fa-circle fa-xs me-1 heartbeat"></i> ACTIVE
+                </span>
+            </div>
+
+            <!-- SVG Container -->
+            <div class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
+                <svg id="neuronArch" width="100%" height="350" viewBox="0 0 650 350" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- Glow effect -->
+                        <filter id="glow-viz" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+
+                    <!-- Background Wires (Inactive) -->
+                    <path d="M 120 100 Q 250 100 350 175" fill="none" stroke="var(--border-subtle)" stroke-width="4" />
+                    <path d="M 120 250 Q 250 250 350 175" fill="none" stroke="var(--border-subtle)" stroke-width="4" />
+                    <path d="M 430 175 L 530 175" fill="none" stroke="var(--border-subtle)" stroke-width="4" />
+
+                    <!-- Active Signal Flows (Animated via JS) -->
+                    <path id="flow-x1" d="M 120 100 Q 250 100 350 175" fill="none" stroke="var(--accent-secondary)" stroke-width="4" class="wire-flowing" style="opacity: 0;" />
+                    <path id="flow-x2" d="M 120 250 Q 250 250 350 175" fill="none" stroke="var(--accent-primary)" stroke-width="4" class="wire-flowing" style="opacity: 0;" />
+                    <path id="flow-y" d="M 430 175 L 530 175" fill="none" stroke="var(--accent-success)" stroke-width="6" class="wire-flowing" style="opacity: 0;" />
+
+                    <!-- Weight Labels -->
+                    <rect x="180" y="80" width="80" height="24" rx="12" fill="var(--bg-card)" stroke="var(--border-subtle)"/>
+                    <text x="220" y="96" id="lbl-w1" fill="var(--accent-secondary)" font-family="monospace" font-weight="bold" font-size="12" text-anchor="middle">w₁ = -1.0</text>
+                    
+                    <rect x="180" y="250" width="80" height="24" rx="12" fill="var(--bg-card)" stroke="var(--border-subtle)"/>
+                    <text x="220" y="266" id="lbl-w2" fill="var(--accent-primary)" font-family="monospace" font-weight="bold" font-size="12" text-anchor="middle">w₂ = -1.0</text>
+                    
+                    <text x="480" y="160" fill="var(--text-secondary)" font-family="Inter" font-size="12" text-anchor="middle">Output (y)</text>
+
+                    <!-- Input 1 Node -->
+                    <circle cx="120" cy="100" r="30" id="node-x1" fill="var(--bg-card)" stroke="var(--text-secondary)" stroke-width="3" />
+                    <text x="120" y="108" id="val-x1" fill="#fff" font-family="Inter" font-weight="bold" font-size="22" text-anchor="middle">0</text>
+                    <text x="120" y="60" fill="var(--text-secondary)" font-family="Inter" font-size="14" text-anchor="middle">Input x₁</text>
+
+                    <!-- Input 2 Node -->
+                    <circle cx="120" cy="250" r="30" id="node-x2" fill="var(--bg-card)" stroke="var(--text-secondary)" stroke-width="3" />
+                    <text x="120" y="258" id="val-x2" fill="#fff" font-family="Inter" font-weight="bold" font-size="22" text-anchor="middle">0</text>
+                    <text x="120" y="210" fill="var(--text-secondary)" font-family="Inter" font-size="14" text-anchor="middle">Input x₂</text>
+
+                    <!-- Soma (Main Neuron Body) -->
+                    <circle cx="350" cy="175" r="60" id="node-soma" fill="rgba(6, 182, 212, 0.1)" stroke="var(--accent-secondary)" stroke-width="4" filter="url(#glow-viz)" class="animate-breathe"/>
+                    <text x="350" y="155" fill="var(--text-primary)" font-family="Poppins" font-size="16" font-weight="600" text-anchor="middle">Σ (wᵢxᵢ)</text>
+                    <text x="350" y="185" id="val-z" fill="#fff" font-family="monospace" font-weight="bold" font-size="20" text-anchor="middle">z = 0.0</text>
+                    <text x="350" y="210" id="val-theta" fill="var(--accent-secondary)" font-family="monospace" font-size="14" text-anchor="middle">θ = -0.5</text>
+
+                    <!-- Output Node -->
+                    <circle cx="530" cy="175" r="30" id="node-y" fill="rgba(34, 197, 94, 0.1)" stroke="var(--accent-success)" stroke-width="3" filter="url(#glow-viz)"/>
+                    <text x="530" y="183" id="val-y" fill="var(--accent-success)" font-family="Inter" font-weight="bold" font-size="24" text-anchor="middle">1</text>
+                </svg>
+            </div>
+
+            <!-- Learning Mode: Step-by-Step Explanation -->
+            <div class="p-3 rounded mt-auto" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle);">
+                <h6 class="text-secondary fw-bold mb-3 small letter-spacing-1"><i class="fas fa-graduation-cap me-2 text-primary"></i> LEARNING MODE: STEP-BY-STEP CALCULATION</h6>
+                <div class="row g-2 font-monospace fs-6">
+                    <div class="col-12" id="step-1">
+                        <span class="text-secondary">Step 1: Read Inputs</span> &rarr; x₁ = <span id="step-x1" class="text-white">0</span>, x₂ = <span id="step-x2" class="text-white">0</span>
+                    </div>
+                    <div class="col-12" id="step-2">
+                        <span class="text-secondary">Step 2: Calculate Weighted Sum (z)</span> &rarr; z = (<span id="step-w1"></span> × <span id="step-x1-2"></span>) + (<span id="step-w2"></span> × <span id="step-x2-2"></span>) = <span id="step-z" class="text-white fw-bold"></span>
+                    </div>
+                    <div class="col-12" id="step-3">
+                        <span class="text-secondary">Step 3: Apply Activation (z ≥ θ)</span> &rarr; <span id="step-cond" class="fw-bold"></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Right Column: Controls -->
+    <div class="col-xl-5">
+        <div class="glass-panel p-4 h-100">
+            <h4 class="fw-bold text-white mb-4" style="font-family: 'Poppins', sans-serif;">Interactive Controls</h4>
+            
+            <!-- Inputs Toggle -->
+            <h6 class="text-secondary fw-bold mb-3 small letter-spacing-1">TOGGLE BINARY INPUTS</h6>
+            <div class="d-flex gap-3 mb-5">
+                <div class="p-3 flex-fill text-center rounded cursor-pointer input-btn" id="btn-input-x1" onclick="toggleInput(1)" style="border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.02); transition: all 0.3s;">
+                    <div class="small text-secondary mb-1">Input x₁</div>
+                    <div class="fw-bold fs-3 text-white"><span id="txt-x1">0</span></div>
+                </div>
+                <div class="p-3 flex-fill text-center rounded cursor-pointer input-btn" id="btn-input-x2" onclick="toggleInput(2)" style="border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.02); transition: all 0.3s;">
+                    <div class="small text-secondary mb-1">Input x₂</div>
+                    <div class="fw-bold fs-3 text-white"><span id="txt-x2">0</span></div>
+                </div>
+            </div>
+
+            <!-- Hyperparameters Display -->
+            <h6 class="text-secondary fw-bold mb-3 small letter-spacing-1">CURRENT HYPERPARAMETERS</h6>
+            <div class="mb-5 p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle);">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-secondary">Weight w₁</span>
+                    <span class="font-monospace text-primary fs-5 fw-bold" id="disp-w1">-1.0</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-secondary">Weight w₂</span>
+                    <span class="font-monospace text-primary fs-5 fw-bold" id="disp-w2">-1.0</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-secondary">Threshold θ (Theta)</span>
+                    <span class="font-monospace text-warning fs-5 fw-bold" id="disp-theta">-0.5</span>
+                </div>
+            </div>
+
+            <!-- Logic Gate Presets -->
+            <h6 class="text-secondary fw-bold mb-3 small letter-spacing-1">LOAD PRESET ARCHITECTURE</h6>
+            <div class="row g-3">
+                <div class="col-6">
+                    <button class="btn btn-outline-premium w-100 preset-btn" onclick="loadPreset('NAND')">NAND</button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-outline-premium w-100 preset-btn" onclick="loadPreset('AND')">AND</button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-outline-premium w-100 preset-btn" onclick="loadPreset('OR')">OR</button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-outline-premium w-100 preset-btn active" onclick="loadPreset('NOR')">NOR</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    <!-- Global Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global GSAP animations
+        document.addEventListener("DOMContentLoaded", (event) => {
+            gsap.from(".glass-panel", { y: 20, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power2.out" });
+        });
+    </script>
+    
+<script src="static/js/animation.js"></script>
+
+</body>
+</html>

@@ -48,14 +48,31 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ x1, x2 })
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("API not available (static mode)");
+            return res.json();
+        })
         .then(data => {
             if(data.status === 'success') {
                 updateDashboard(data.details);
                 highlightTruthTable(x1, x2);
             }
         })
-        .catch(err => console.error("Error running simulation:", err));
+        .catch(() => {
+            // Client-side local calculation fallback for GitHub Pages
+            const w1 = -1, w2 = -1, threshold = -0.5;
+            const net_input = (w1 * x1) + (w2 * x2);
+            const output = net_input >= threshold ? 1 : 0;
+            const details = {
+                inputs: [x1, x2],
+                weights: [w1, w2],
+                net_input: net_input,
+                threshold: threshold,
+                output: output
+            };
+            updateDashboard(details);
+            highlightTruthTable(x1, x2);
+        });
     }
 
     function updateDashboard(details) {
@@ -107,19 +124,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchTruthTable() {
         fetch('/api/truth-table')
             .then(res => res.json())
-            .then(data => {
-                truthTableBody.innerHTML = '';
-                data.forEach((row, index) => {
-                    const tr = document.createElement('tr');
-                    tr.id = `tt-row-${row.x1}-${row.x2}`;
-                    tr.innerHTML = `
-                        <td>${row.x1}</td>
-                        <td>${row.x2}</td>
-                        <td><span class="badge ${row.expected === 1 ? 'bg-success' : 'bg-danger'}">${row.expected}</span></td>
-                    `;
-                    truthTableBody.appendChild(tr);
-                });
+            .then(data => populateTable(data))
+            .catch(() => {
+                // Client-side fallback data
+                const fallbackData = [
+                    { x1: 0, x2: 0, expected: 1 },
+                    { x1: 0, x2: 1, expected: 0 },
+                    { x1: 1, x2: 0, expected: 0 },
+                    { x1: 1, x2: 1, expected: 0 }
+                ];
+                populateTable(fallbackData);
             });
+    }
+
+    function populateTable(data) {
+        truthTableBody.innerHTML = '';
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.id = `tt-row-${row.x1}-${row.x2}`;
+            tr.innerHTML = `
+                <td>${row.x1}</td>
+                <td>${row.x2}</td>
+                <td><span class="badge ${row.expected === 1 ? 'bg-success' : 'bg-danger'}">${row.expected}</span></td>
+            `;
+            truthTableBody.appendChild(tr);
+        });
     }
 
     function highlightTruthTable(x1, x2) {
